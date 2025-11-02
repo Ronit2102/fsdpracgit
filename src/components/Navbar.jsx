@@ -21,7 +21,7 @@ const Navbar = () => {
               ExamTemplate
             </Link>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <Link
               to="/"
@@ -35,7 +35,7 @@ const Navbar = () => {
             >
               About
             </Link>
-            
+
             {isAuthenticated ? (
               <>
                 <Link
@@ -70,7 +70,7 @@ const Navbar = () => {
                 </Link>
               </>
             )}
-            
+
             <button
               onClick={() => dispatch(toggleTheme())}
               className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-lg"

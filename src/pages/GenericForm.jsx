@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../api/auth';
 
 const GenericForm = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -92,25 +93,33 @@ const GenericForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Add timestamp and user info
-    const submissionData = {
-      ...formData,
-      submittedAt: new Date().toISOString(),
-      submittedBy: JSON.parse(localStorage.getItem('user'))?.email || 'Unknown',
-    };
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login again');
+        navigate('/login');
+        return;
+      }
 
-    // Store in localStorage
-    const existingSubmissions = JSON.parse(localStorage.getItem('formSubmissions')) || [];
-    existingSubmissions.push(submissionData);
-    localStorage.setItem('formSubmissions', JSON.stringify(existingSubmissions));
-
-    setSubmittedData(submissionData);
-    setSubmitted(true);
-
-    console.log('Form submitted successfully:', submissionData);
+      // Submit to real API
+      const result = await authAPI.submitForm(formData, token);
+      
+      if (result.success) {
+        setSubmittedData(result.submission);
+        setSubmitted(true);
+        console.log('Form submitted successfully:', result.submission);
+      } else {
+        alert('Form submission failed: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('Form submission failed. Please try again.');
+    }
   };
 
   const renderField = (field) => {
